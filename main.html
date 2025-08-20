@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DinoWish</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+</head>
+<body>
+    <div class="container">
+        <img src="cake.png" class="cake-image">
+        <div class="content">
+            <p>Welcome to DinoWish</p>
+            <h1>Wish Me Happy <span>Birthday!</span></h1>
+            <div class="Birth-Day">
+                <div>
+                    <p id="days">00</p>
+                    <span>Days</span>
+                </div>
+                <div>
+                    <p id="hours">00</p>
+                    <span>Hours</span>
+                </div>
+                <div>
+                    <p id="minutes">00</p>
+                    <span>Minutes</span>
+                </div>
+                <div>
+                    <p id="seconds">00</p>
+                    <span>Seconds</span>
+                </div>
+            </div>
+            <div class="button-row">
+                <button class="button" onclick="window.location.href='https://github.com/Armaan240'">Who Am I?👀</button>
+                <button class="button1" id="openCardBtn">Generate Card</button>
+            </div>
+        </div>
+        <img src="BdayDino (3).png" class="BdayDino">
+    <div id="cardPopup" class="popup-overlay">
+  <div class="popup-card">
+    <button id="closeCardBtn" class="popup-close">✕</button>
+    <div class="popup-left">
+      <h2 class="popup-title">🎉 Generate Birthday Card</h2>
+      <label class="field-label" for="receiver">Receiver's Name</label>
+      <input class="field-input" type="text" id="receiver" placeholder="e.g. Armaan" />
+      <label class="field-label" for="sender">Sender's Name</label>
+      <input class="field-input" type="text" id="sender" placeholder="e.g. Your Bestie" />
+      <button id="downloadCard" class="button popup-btn">Download Card</button>
+      <p class="tiny-hint">The actual card is a surprise — it won’t preview here 😉</p>
+    </div>
+    <div class="popup-right">
+      <img src="birthday.png" alt="Party Dino" class="popup-dino" />
+    </div>
+  </div>
+</div>
+<canvas id="cardCanvas" width="1080" height="1080" style="display:none;"></canvas>
+</div>
+    </div>
+    <script>
+        var countDownDate = new Date("Sep 2, 2025 00:00:00").getTime();
+        var x = setInterval(function() {
+            var now = new Date().getTime();
+            var distance = countDownDate - now;
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours;
+            document.getElementById("minutes").innerText = minutes;
+            document.getElementById("seconds").innerText = seconds;
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.querySelector(".content").innerHTML = "<h1>Happy Birthday!</h1>";
+            }
+        }, 1000);
+        function launchConfetti() {
+            const container = document.getElementById("confetti");
+            for (let i = 0; i < 50; i++) {
+                let conf = document.createElement("div");
+                conf.classList.add("confetti");
+                let angle = Math.random() * 2 * Math.PI;
+        let radius = Math.random() * 200 + 50; // spread distance
+        let x = Math.cos(angle) * radius;
+        let y = Math.sin(angle) * radius;
+        conf.style.setProperty("--x", x);
+        conf.style.setProperty("--y", y);
+        conf.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        container.appendChild(conf);
+        setTimeout(() => conf.remove(), 1200);
+     }
+        }               
+</script>
+<script>
+  const openCardBtn = document.getElementById('openCardBtn');
+  const cardPopup   = document.getElementById('cardPopup');
+  const closeCardBtn= document.getElementById('closeCardBtn');
+  openCardBtn?.addEventListener('click', () => cardPopup.classList.add('show'));
+  closeCardBtn?.addEventListener('click', () => cardPopup.classList.remove('show'));
+  cardPopup?.addEventListener('click', (e) => { if (e.target === cardPopup) cardPopup.classList.remove('show'); });
+  const canvas = document.getElementById('cardCanvas');
+  const ctx = canvas.getContext('2d');
+  function drawConfettiDots(n=80) {
+    for (let i=0; i<n; i++){
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const s = Math.random() * 8 + 3;
+      ctx.fillStyle = `hsl(${Math.random()*360}, 90%, 55%)`;
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.rotate((Math.random()*30-15) * Math.PI/180);
+      ctx.fillRect(-s/2, -s/2, s, s);
+      ctx.restore();
+    }
+  }
+  function drawCard(receiver="Friend", sender="Me") {
+    const g = ctx.createLinearGradient(0,0, canvas.width, canvas.height);
+    g.addColorStop(0, '#fff0f7');
+    g.addColorStop(1, '#fff7e0');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    const pad = 70;
+    const w = canvas.width - pad*2;
+    const h = canvas.height - pad*2;
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#ff87b8';
+    ctx.lineWidth = 12;
+    roundRect(ctx, pad, pad, w, h, 40, true, true);
+    ctx.fillStyle = '#e52080';
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 80px sans-serif';
+    ctx.fillText('Happy Birthday!', canvas.width/2, pad + 150);
+    ctx.fillStyle = '#520049';
+    ctx.font = 'bold 64px sans-serif';
+    ctx.fillText(receiver + ' 🎉', canvas.width/2, pad + 270);
+    ctx.strokeStyle = '#ffe0ef';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(pad+60, pad+320);
+    ctx.lineTo(canvas.width - pad - 60, pad+320);
+    ctx.stroke();
+    ctx.fillStyle = '#fc416c';
+    ctx.font = 'bold 54px sans-serif';
+    ctx.fillText('— From ' + sender, canvas.width/2, canvas.height - pad - 140);
+    drawConfettiDots(90);
+  }
+  function roundRect(ctx, x, y, w, h, r, fill, stroke){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y,   x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x,   y+h, r);
+    ctx.arcTo(x,   y+h, x,   y,   r);
+    ctx.arcTo(x,   y,   x+w, y,   r);
+    ctx.closePath();
+    if (fill) ctx.fill();
+    if (stroke) ctx.stroke();
+  }
+  document.getElementById('downloadCard')?.addEventListener('click', () => {
+    const receiver = (document.getElementById('receiver')?.value || 'Friend').trim();
+    const sender   = (document.getElementById('sender')?.value   || 'Me').trim();
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawCard(receiver, sender);
+    const a = document.createElement('a');
+    a.download = `birthday_card_${receiver}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+</script>
+</body>
+</html>
